@@ -1,4 +1,6 @@
+import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
+import { userAtom } from '../store/AuthAtoms';
 
 const Container = styled.div`
   width: 100%;
@@ -11,8 +13,20 @@ const Container = styled.div`
   flex-shrink: 0;
 `;
 
+const UserName = styled.div`
+  font-size: 16px;
+  color: rgba(256, 256, 256, 0.6);
+  margin-left: auto;
+`;
+
 const Header = () => {
-  return <Container></Container>;
+  const userInfo = useRecoilValue(userAtom);
+
+  return (
+    <Container>
+      <UserName>{userInfo ? `Hello, ${userInfo.name}` : ''}</UserName>
+    </Container>
+  );
 };
 
 export default Header;

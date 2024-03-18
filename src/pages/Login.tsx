@@ -1,4 +1,8 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
+import { userAtom } from '../store/AuthAtoms';
 
 const Page = styled.div`
   width: 100%;
@@ -18,6 +22,19 @@ const LoginContainer = styled.div`
   flex-direction: column;
 `;
 
+const NameInput = styled.input`
+  all: unset;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  margin-bottom: 16px;
+  box-sizing: border-box;
+  padding: 4px;
+
+  &:focus {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+  }
+`;
+
 const LoginButton = styled.div`
   width: 100%;
   height: 36px;
@@ -31,10 +48,24 @@ const LoginButton = styled.div`
 `;
 
 const LoginPage = () => {
+  const [name, setName] = useState<string>('');
+  const navigate = useNavigate();
+  const [userInfo, setUserInfo] = useRecoilState(userAtom);
+
+  const login = () => {
+    if (name === '') return;
+    setUserInfo({
+      id: '123',
+      name,
+    });
+    navigate('/main');
+  };
+
   return (
     <Page>
       <LoginContainer>
-        <LoginButton>Login</LoginButton>
+        <NameInput placeholder="Type your nickname" value={name} onChange={(e) => setName(e.target.value)} maxLength={10} />
+        <LoginButton onClick={login}>Login</LoginButton>
       </LoginContainer>
     </Page>
   );
