@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 import { userAtom } from '../store/AuthAtoms';
+import { addUser, login } from '../repository/User';
+import { v4 } from 'uuid';
 
 const Page = styled.div`
   width: 100%;
@@ -52,20 +54,30 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useRecoilState(userAtom);
 
-  const login = () => {
+  const handleLogin = () => {
     if (name === '') return;
-    setUserInfo({
-      id: '123',
-      name,
+    login(name).then((data) => {
+      if (!!data) {
+        setUserInfo(data);
+        navigate('/main');
+      } else {
+        handleSignup(name);
+      }
     });
-    navigate('/main');
+  };
+
+  const handleSignup = (name: string) => {
+    addUser({
+      id: v4(),
+      name,
+    }).then(() => handleLogin());
   };
 
   return (
     <Page>
       <LoginContainer>
         <NameInput placeholder="Type your nickname" value={name} onChange={(e) => setName(e.target.value)} maxLength={10} />
-        <LoginButton onClick={login}>Login</LoginButton>
+        <LoginButton onClick={handleLogin}>Login</LoginButton>
       </LoginContainer>
     </Page>
   );
