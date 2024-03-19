@@ -135,3 +135,13 @@ export const PromptTestBar = styled.div`
   background-color: white;
   border-top: 1px solid rgba(0, 0, 0, 0.08);
 `;
+
+export const ViewerPlaceholder = styled.div`
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.6);
+`;

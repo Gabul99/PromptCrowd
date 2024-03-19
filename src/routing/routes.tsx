@@ -20,7 +20,7 @@ const Routes = () => {
       <Route element={<Layout />}>
         <Route path="/" element={<LoginPage />} />
         <Route path="/main" element={<MainPage />} />
-        <Route path="/detail" element={<DetailPage />} />
+        <Route path="/detail/:questionId" element={<DetailPage />} />
       </Route>
     </ReactRouterRoutes>
   );

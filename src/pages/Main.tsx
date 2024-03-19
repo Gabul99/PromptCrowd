@@ -1,7 +1,9 @@
 import styled from 'styled-components';
 import QuestionItem from '../component/QuestionItem';
 import NewQuestionModal from '../component/NewQuestionModal';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Question } from '../model/Question';
+import { getQuestions } from '../repository/Question';
 
 const PageContainer = styled.div`
   width: 100%;
@@ -36,21 +38,40 @@ const NewQuestionButton = styled.div`
   margin-left: auto;
 `;
 
+const Placeholder = styled.div`
+  width: 100%;
+  padding: 16px;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 const MainPage = () => {
   const [isModalOpen, setModalOpen] = useState(false);
+  const [questions, setQuestions] = useState<Question[]>([]);
+
+  useEffect(() => {
+    refresh();
+  }, []);
+
+  const refresh = () => {
+    getQuestions().then((data) => {
+      if (data) setQuestions(data);
+    });
+  };
 
   return (
     <PageContainer>
       <QuestionList>
         <NewQuestionButton onClick={() => setModalOpen(true)}>+ New Question</NewQuestionButton>
-        <QuestionItem />
-        <QuestionItem />
-        <QuestionItem />
-        <QuestionItem />
-        <QuestionItem />
-        <QuestionItem />
+        {questions.map((q) => (
+          <QuestionItem key={q.id} question={q} />
+        ))}
+        {questions.length === 0 && <Placeholder>No questions now</Placeholder>}
       </QuestionList>
-      {isModalOpen && <NewQuestionModal onClose={() => setModalOpen(false)} />}
+      {isModalOpen && <NewQuestionModal refresh={refresh} onClose={() => setModalOpen(false)} />}
     </PageContainer>
   );
 };

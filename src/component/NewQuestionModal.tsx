@@ -1,4 +1,9 @@
+import { useState } from 'react';
+import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
+import { v4 } from 'uuid';
+import { userAtom } from '../store/AuthAtoms';
+import { postQuestion } from '../repository/Question';
 
 const Container = styled.div`
   width: 100vw;
@@ -71,10 +76,47 @@ const Button = styled.div`
 `;
 
 interface Props {
+  refresh: () => void;
   onClose: () => void;
 }
 
-const NewQuestionModal = ({ onClose }: Props) => {
+const NewQuestionModal = ({ refresh, onClose }: Props) => {
+  const [title, setTitle] = useState<string>('');
+  const [detail, setDetail] = useState<string>('');
+  const [exMsg, setExMsg] = useState<string>('');
+  const [exResponse, setExResponse] = useState<string>('');
+  const userInfo = useRecoilValue(userAtom);
+  const [isProcessing, setProcessing] = useState<boolean>(false);
+
+  const handlePost = () => {
+    if (isProcessing) return;
+    if (!userInfo || title === '' || detail === '' || exMsg === '' || exResponse === '') {
+      window.alert('Check the blank input');
+      return;
+    }
+    setProcessing(true);
+    const newQuestion = {
+      id: v4(),
+      userId: userInfo?.id,
+      createdTime: new Date().toISOString(),
+      title,
+      description: detail,
+      exampleUserMsg: exMsg,
+      exampleResponse: exResponse,
+    };
+    postQuestion(newQuestion)
+      .then(() => {
+        window.alert('Success to post question!');
+        setProcessing(false);
+        refresh();
+        onClose();
+      })
+      .catch(() => {
+        window.alert('Error occurred!');
+        setProcessing(false);
+      });
+  };
+
   return (
     <Container
       onClick={() => {
@@ -84,14 +126,14 @@ const NewQuestionModal = ({ onClose }: Props) => {
       <ModalContainer onClick={(e) => e.stopPropagation()}>
         <Layout>
           <SubTitle>Title</SubTitle>
-          <OneLineInput placeholder="Type question title" />
+          <OneLineInput value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Type question title" />
           <SubTitle>Detail</SubTitle>
-          <TextAreaInput placeholder="Type question detail" />
+          <TextAreaInput value={detail} onChange={(e) => setDetail(e.target.value)} placeholder="Type question detail" />
           <SubTitle>Example user message</SubTitle>
-          <TextAreaInput placeholder="Type example user message" />
+          <TextAreaInput value={exMsg} onChange={(e) => setExMsg(e.target.value)} placeholder="Type example user message" />
           <SubTitle>Example AI answer</SubTitle>
-          <TextAreaInput placeholder="Type example AI answer" />
-          <Button>Post</Button>
+          <TextAreaInput value={exResponse} onChange={(e) => setExResponse(e.target.value)} placeholder="Type example AI answer" />
+          <Button onClick={handlePost}>Post</Button>
         </Layout>
       </ModalContainer>
     </Container>
