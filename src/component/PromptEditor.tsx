@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { GoRepoForked } from 'react-icons/go';
 
 const Container = styled.div`
   width: 100%;
@@ -41,9 +42,25 @@ const PromptInput = styled.textarea`
   font-size: 12px;
 `;
 
-const PromptEditor = () => {
-  const [promptValue, setPromptValue] = useState('');
+const ForkingContainer = styled.div`
+  padding: 16px;
+  background-color: white;
+  border-radius: 8px;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
 
+interface Props {
+  title: string;
+  setTitle: (value: string) => void;
+  prompt: string;
+  setPrompt: (value: string) => void;
+  forkingId: string | null;
+}
+
+const PromptEditor = ({ title, setTitle, prompt, setPrompt, forkingId }: Props) => {
   useEffect(() => {
     const textarea = document.getElementById('textarea-prompt');
     if (textarea) textarea.style.height = `${textarea?.scrollHeight ?? 0}px`;
@@ -52,11 +69,16 @@ const PromptEditor = () => {
 
   return (
     <Container>
+      {forkingId && (
+        <ForkingContainer>
+          <GoRepoForked /> You are forking {forkingId}...
+        </ForkingContainer>
+      )}
       <TitleBar>
-        <TitleInput placeholder="Type title..." />
+        <TitleInput value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Type title..." />
       </TitleBar>
       <PromptContainer>
-        <PromptInput id="textarea-prompt" placeholder="Type Prompt..." value={promptValue} onChange={(e) => setPromptValue(e.target.value)} />
+        <PromptInput id="textarea-prompt" placeholder="Type Prompt..." value={prompt} onChange={(e) => setPrompt(e.target.value)} />
       </PromptContainer>
     </Container>
   );

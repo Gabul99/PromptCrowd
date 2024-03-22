@@ -58,6 +58,7 @@ export const ExplanationArea = styled.div`
     background-color: rgba(0, 0, 0, 0.03);
     font-size: 14px;
     font-weight: 400;
+    white-space: pre-wrap;
   }
 `;
 
@@ -109,6 +110,15 @@ export const AnswerListItem = styled.div`
   &.selected {
     background-color: rgba(0, 0, 0, 0.03);
   }
+
+  .forkCountContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 12px;
+    gap: 4px;
+    color: rgba(0, 0, 0, 0.6);
+  }
 `;
 
 export const PromptArea = styled.div`
@@ -134,6 +144,10 @@ export const PromptTestBar = styled.div`
   height: 64px;
   background-color: white;
   border-top: 1px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 16px;
 `;
 
 export const ViewerPlaceholder = styled.div`
@@ -144,4 +158,16 @@ export const ViewerPlaceholder = styled.div`
   justify-content: center;
   font-size: 14px;
   color: rgba(0, 0, 0, 0.6);
+`;
+
+export const PostButton = styled.div`
+  width: fit-content;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background-color: #24a0ed;
+  color: white;
+  cursor: pointer;
+  margin-left: auto;
+  font-size: 14px;
+  font-weight: 500;
 `;

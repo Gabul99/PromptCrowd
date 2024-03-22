@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { GoRepoForked } from 'react-icons/go';
+import { Answer } from '../model/Answer';
 
 const Container = styled.div`
   width: 100%;
@@ -41,6 +42,11 @@ const ForkButton = styled.div`
   &:hover {
     background-color: rgba(0, 0, 0, 0.12);
   }
+
+  .count {
+    font-size: 12px;
+    margin-left: 4px;
+  }
 `;
 
 const PromptContainer = styled.div`
@@ -54,19 +60,53 @@ const PromptContainer = styled.div`
 const PromptText = styled.div`
   font-size: 12px;
   font-weight: 400;
+  white-space: pre-wrap;
 `;
 
-const PromptViewer = () => {
+const ForkingContainer = styled.div`
+  padding: 16px;
+  background-color: white;
+  border-radius: 8px;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  .fork_id {
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+`;
+
+interface Props {
+  answer: Answer | undefined;
+  onFork: (answerId: string, content: string) => void;
+  linkToFork: (answerId: string) => void;
+}
+
+const PromptViewer = ({ answer, onFork, linkToFork }: Props) => {
+  if (!answer) return <div></div>;
   return (
     <Container>
-      <TitleBar>
-        <TitleText>Title</TitleText>
-        <ForkButton>
+      {answer.forkId && (
+        <ForkingContainer>
           <GoRepoForked />
+          This answer is forking{' '}
+          <div className="fork_id" onClick={() => linkToFork(answer.forkId!)}>
+            {answer.forkId}
+          </div>
+        </ForkingContainer>
+      )}
+      <TitleBar>
+        <TitleText>{answer.title}</TitleText>
+        <ForkButton onClick={() => onFork(answer.id, answer.content)}>
+          <GoRepoForked />
+          <div className="count">{answer.forkCount}</div>
         </ForkButton>
       </TitleBar>
       <PromptContainer>
-        <PromptText>Detail</PromptText>
+        <PromptText>{answer.content}</PromptText>
       </PromptContainer>
     </Container>
   );
