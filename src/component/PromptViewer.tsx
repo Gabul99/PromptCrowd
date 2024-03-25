@@ -58,7 +58,7 @@ const PromptContainer = styled.div`
 `;
 
 const PromptText = styled.div`
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 400;
   white-space: pre-wrap;
 `;
@@ -79,9 +79,37 @@ const ForkingContainer = styled.div`
   }
 `;
 
+const ParamsContainer = styled.div`
+  width: 100%;
+  padding: 16px;
+  height: fit-content;
+  border-radius: 8px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .row {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    .param-name {
+      font-size: 12px;
+    }
+
+    .param-value {
+      font-size: 12px;
+      font-weight: 500;
+    }
+  }
+`;
+
 interface Props {
   answer: Answer | undefined;
-  onFork: (answerId: string, content: string) => void;
+  onFork: (answerId: string, content: string, temperature: number, topP: number) => void;
   linkToFork: (answerId: string) => void;
 }
 
@@ -100,11 +128,21 @@ const PromptViewer = ({ answer, onFork, linkToFork }: Props) => {
       )}
       <TitleBar>
         <TitleText>{answer.title}</TitleText>
-        <ForkButton onClick={() => onFork(answer.id, answer.content)}>
+        <ForkButton onClick={() => onFork(answer.id, answer.content, answer.temperature, answer.topP)}>
           <GoRepoForked />
           <div className="count">{answer.forkCount}</div>
         </ForkButton>
       </TitleBar>
+      <ParamsContainer>
+        <div className="row">
+          <div className="param-name">Temperature</div>
+          <div className="param-value">{answer.temperature}</div>
+        </div>
+        <div className="row">
+          <div className="param-name">Top P</div>
+          <div className="param-value">{answer.topP}</div>
+        </div>
+      </ParamsContainer>
       <PromptContainer>
         <PromptText>{answer.content}</PromptText>
       </PromptContainer>

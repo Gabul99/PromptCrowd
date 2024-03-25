@@ -171,3 +171,28 @@ export const PostButton = styled.div`
   font-size: 14px;
   font-weight: 500;
 `;
+
+export const GPTButton = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  color: white;
+  background-color: #00a67e;
+  border-radius: 4px;
+  cursor: pointer;
+  gap: 4px;
+  font-size: 14px;
+
+  .icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+  }
+
+  &.inactive {
+    background-color: lightgray;
+    cursor: not-allowed;
+  }
+`;

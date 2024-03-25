@@ -11,6 +11,8 @@ import { v4 } from 'uuid';
 import { useRecoilValue } from 'recoil';
 import { userAtom } from '../store/AuthAtoms';
 import { GoRepoForked } from 'react-icons/go';
+import { RiOpenaiFill } from 'react-icons/ri';
+import GPTTestModal from '../component/GPTTestModal';
 
 const DetailPage = () => {
   const [question, setQuestion] = useState<Question>();
@@ -24,6 +26,9 @@ const DetailPage = () => {
 
   const [answerTitle, setAnswerTitle] = useState<string>('');
   const [answerPrompt, setAnswerPrompt] = useState<string>('');
+  const [answerTemperature, setAnswerTemperature] = useState<number | null>(null);
+  const [answerTopP, setAnswerTopP] = useState<number | null>(null);
+  const [isTestModalOpen, setTestModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     refresh();
@@ -41,7 +46,7 @@ const DetailPage = () => {
 
   const handlePostAnswer = () => {
     if (!userInfo || !questionId) return;
-    if (answerTitle === '' || answerPrompt === '') return;
+    if (answerTitle === '' || answerPrompt === '' || answerTemperature === null || answerTopP === null) return;
     const newAnswer = {
       id: v4(),
       userId: userInfo.id,
@@ -49,6 +54,8 @@ const DetailPage = () => {
       questionId,
       title: answerTitle,
       content: answerPrompt,
+      temperature: answerTemperature,
+      topP: answerTopP,
       forkId: forkingAnswerId,
       forkCount: 0,
     };
@@ -60,15 +67,19 @@ const DetailPage = () => {
       setEditing(false);
       if (forkingAnswerId !== null) await addForkCount(forkingAnswerId);
       setForkingAnswerId(null);
+      setAnswerTemperature(null);
+      setAnswerTopP(null);
       refresh();
     });
   };
 
-  const handleFork = (answerId: string, content: string) => {
+  const handleFork = (answerId: string, content: string, temperature: number, topP: number) => {
     setForkingAnswerId(answerId);
     setAnswerTitle('');
     setAnswerPrompt(content);
     setSelectedAnswerId(null);
+    setAnswerTemperature(temperature);
+    setAnswerTopP(topP);
     setEditing(true);
   };
 
@@ -111,6 +122,8 @@ const DetailPage = () => {
                     setAnswerTitle('');
                     setAnswerPrompt('');
                     setForkingAnswerId(null);
+                    setAnswerTemperature(null);
+                    setAnswerTopP(null);
                     setEditing(false);
                   }}
                 >
@@ -126,15 +139,39 @@ const DetailPage = () => {
       <S.PromptArea>
         <S.TextAndEditorArea>
           {isEditing ? (
-            <PromptEditor title={answerTitle} setTitle={setAnswerTitle} prompt={answerPrompt} setPrompt={setAnswerPrompt} forkingId={forkingAnswerId} />
+            <PromptEditor
+              title={answerTitle}
+              setTitle={setAnswerTitle}
+              prompt={answerPrompt}
+              setPrompt={setAnswerPrompt}
+              temperature={answerTemperature}
+              setTemperature={setAnswerTemperature}
+              topP={answerTopP}
+              setTopP={setAnswerTopP}
+              forkingId={forkingAnswerId}
+            />
           ) : selectedAnswerId ? (
             <PromptViewer answer={answers?.filter((a) => a.id === selectedAnswerId)[0]} onFork={handleFork} linkToFork={linkToFork} />
           ) : (
             <S.ViewerPlaceholder>Select other user's answer or Write your new answer!</S.ViewerPlaceholder>
           )}
         </S.TextAndEditorArea>
-        <S.PromptTestBar>{isEditing && <S.PostButton onClick={handlePostAnswer}>Post</S.PostButton>}</S.PromptTestBar>
+        <S.PromptTestBar>
+          <S.GPTButton
+            className={isEditing || selectedAnswerId !== null ? '' : 'inactive'}
+            onClick={() => {
+              if (isEditing || selectedAnswerId !== null) setTestModalOpen(true);
+            }}
+          >
+            <div className="icon">
+              <RiOpenaiFill />
+            </div>
+            GPT Test
+          </S.GPTButton>
+          {isEditing && <S.PostButton onClick={handlePostAnswer}>Post</S.PostButton>}
+        </S.PromptTestBar>
       </S.PromptArea>
+      {isTestModalOpen && <GPTTestModal onClose={() => setTestModalOpen(false)} />}
     </S.Container>
   );
 };
