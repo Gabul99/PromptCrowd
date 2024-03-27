@@ -171,7 +171,14 @@ const DetailPage = () => {
           {isEditing && <S.PostButton onClick={handlePostAnswer}>Post</S.PostButton>}
         </S.PromptTestBar>
       </S.PromptArea>
-      {isTestModalOpen && <GPTTestModal onClose={() => setTestModalOpen(false)} />}
+      {isTestModalOpen && (
+        <GPTTestModal
+          prompt={answerPrompt}
+          temperature={answerTemperature ?? answers!.filter((a) => a.id === selectedAnswerId)[0].temperature}
+          topP={answerTopP ?? answers!.filter((a) => a.id === selectedAnswerId)[0].topP}
+          onClose={() => setTestModalOpen(false)}
+        />
+      )}
     </S.Container>
   );
 };

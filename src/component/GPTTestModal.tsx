@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 import { LuSend } from 'react-icons/lu';
+import { sendMessage } from '../openai/OpenAI';
+import { useState } from 'react';
 
 const Container = styled.div`
   width: 100vw;
@@ -92,11 +94,47 @@ const InputContainer = styled.div`
   }
 `;
 
+interface Msg {
+  name: string;
+  content: string;
+}
+
 interface Props {
+  prompt: string;
+  temperature: number;
+  topP: number;
   onClose: () => void;
 }
 
-const GPTTestModal = ({ onClose }: Props) => {
+const GPTTestModal = ({ prompt, temperature, topP, onClose }: Props) => {
+  const [isNetworking, setNetworking] = useState<boolean>(false);
+  const [inputValue, setInputValue] = useState<string>('');
+  const [chats, setChats] = useState<Msg[]>([]);
+  const handleSend = () => {
+    if (isNetworking) return;
+    setNetworking(true);
+    setChats([...chats, { name: 'user', content: inputValue }]);
+    setInputValue('');
+    sendMessage(
+      prompt,
+      inputValue,
+      temperature,
+      topP,
+      chats.map((chat) => {
+        if (chat.name === 'user') return { role: 'user', content: chat.content };
+        else return { role: 'assistant', content: chat.content };
+      })
+    )
+      .then((a) => {
+        setNetworking(false);
+        setChats((prev) => [...prev, { name: 'gpt', content: a.message.content ?? 'error' }]);
+      })
+      .catch(() => {
+        setNetworking(false);
+        window.alert('Error: problem during networking through OpenAI API');
+        setChats((prev) => prev.slice(0, prev.length - 1));
+      });
+  };
   return (
     <Container onClick={onClose}>
       <ModalContainer onClick={(e) => e.stopPropagation()}>
@@ -104,17 +142,29 @@ const GPTTestModal = ({ onClose }: Props) => {
           <Title>GPT Test</Title>
           <ChatArea>
             <div className="list">
-              <ChatItem name="user" message="hi" />
-              <ChatItem name="user" message="hi" />
-              <ChatItem name="user" message="hi" />
-              <ChatItem name="user" message="hi" />
+              {chats.map((chat) => (
+                <ChatItem name={chat.name} message={chat.content} />
+              ))}
             </div>
           </ChatArea>
           <InputContainer>
-            <input placeholder="Type user message" />
-            <div className="btn">
-              <LuSend />
-            </div>
+            {isNetworking ? (
+              <div>AI is generating answer...</div>
+            ) : (
+              <>
+                <input
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleSend();
+                  }}
+                  placeholder="Type user message"
+                />
+                <div className="btn" onClick={() => handleSend()}>
+                  <LuSend />
+                </div>
+              </>
+            )}
           </InputContainer>
         </Layout>
       </ModalContainer>
@@ -142,6 +192,7 @@ const ChatItemContainer = styled.div`
   .msg {
     font-size: 14px;
     color: black;
+    white-space: pre-line;
   }
 `;
 
