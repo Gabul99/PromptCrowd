@@ -42,6 +42,7 @@ export const ExplanationArea = styled.div`
     font-size: 14px;
     line-height: 150%;
     font-weight: 400;
+    white-space: pre-wrap;
   }
 
   .sub-title {
@@ -49,6 +50,7 @@ export const ExplanationArea = styled.div`
     font-size: 14px;
     font-weight: 500;
     color: rgba(0, 0, 0, 0.6);
+    white-space: pre-wrap;
   }
 
   .case-block {

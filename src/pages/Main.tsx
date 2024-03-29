@@ -66,9 +66,11 @@ const MainPage = () => {
     <PageContainer>
       <QuestionList>
         <NewQuestionButton onClick={() => setModalOpen(true)}>+ New Question</NewQuestionButton>
-        {questions.map((q) => (
-          <QuestionItem key={q.id} question={q} />
-        ))}
+        {questions
+          .sort((a, b) => (new Date(b.createdTime) > new Date(a.createdTime) ? 1 : -1))
+          .map((q) => (
+            <QuestionItem key={q.id} question={q} />
+          ))}
         {questions.length === 0 && <Placeholder>No questions now</Placeholder>}
       </QuestionList>
       {isModalOpen && <NewQuestionModal refresh={refresh} onClose={() => setModalOpen(false)} />}

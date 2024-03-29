@@ -113,27 +113,29 @@ const DetailPage = () => {
             <p className="placeholder">New Answer...</p>
           </S.AnswerListItem>
           {answers &&
-            answers.map((a) => {
-              return (
-                <S.AnswerListItem
-                  className={selectedAnswerId === a.id ? 'selected' : ''}
-                  onClick={() => {
-                    setSelectedAnswerId(a.id);
-                    setAnswerTitle('');
-                    setAnswerPrompt('');
-                    setForkingAnswerId(null);
-                    setAnswerTemperature(null);
-                    setAnswerTopP(null);
-                    setEditing(false);
-                  }}
-                >
-                  <p className="title">{a.title}</p>
-                  <div className="forkCountContainer">
-                    <GoRepoForked /> {a.forkCount}
-                  </div>
-                </S.AnswerListItem>
-              );
-            })}
+            answers
+              .sort((a, b) => (new Date(b.createdTime) > new Date(a.createdTime) ? 1 : -1))
+              .map((a) => {
+                return (
+                  <S.AnswerListItem
+                    className={selectedAnswerId === a.id ? 'selected' : ''}
+                    onClick={() => {
+                      setSelectedAnswerId(a.id);
+                      setAnswerTitle('');
+                      setAnswerPrompt('');
+                      setForkingAnswerId(null);
+                      setAnswerTemperature(null);
+                      setAnswerTopP(null);
+                      setEditing(false);
+                    }}
+                  >
+                    <p className="title">{a.title}</p>
+                    <div className="forkCountContainer">
+                      <GoRepoForked /> {a.forkCount}
+                    </div>
+                  </S.AnswerListItem>
+                );
+              })}
         </S.AnswerList>
       </S.AnswerListArea>
       <S.PromptArea>
